@@ -27,7 +27,7 @@ HomeActivity::HomeActivity(GfxRenderer& renderer, MappedInputManager& mappedInpu
 HomeActivity::~HomeActivity() = default;
 
 int HomeActivity::getMenuItemCount() const {
-  int count = 4;  // File Browser, Recents, File transfer, Settings
+  int count = 5;  // File Browser, Recents, File transfer, Settings, Companion
   if (!recentBooks.empty()) {
     count += recentBooks.size();
   }
@@ -198,6 +198,9 @@ void HomeActivity::loop() {
       case HomeMenuItem::SETTINGS_MENU:
         onSettingsOpen();
         break;
+      case HomeMenuItem::COMPANION:
+        onCompanionOpen();
+        break;
       default:
         break;
     }
@@ -311,9 +314,11 @@ void HomeActivity::render(RenderLock&&) {
                           std::bind(&HomeActivity::storeCoverBuffer, this));
 
   // Build menu items dynamically
+  // "Companion" is a placeholder entry, not yet i18n'd via tr() -- see
+  // onCompanionOpen().
   std::vector<const char*> menuItems = {tr(STR_BROWSE_FILES), tr(STR_MENU_RECENT_BOOKS), tr(STR_FILE_TRANSFER),
-                                        tr(STR_SETTINGS_TITLE)};
-  std::vector<UIIcon> menuIcons = {Folder, Recent, Transfer, Settings};
+                                        tr(STR_SETTINGS_TITLE), "Companion"};
+  std::vector<UIIcon> menuIcons = {Folder, Recent, Transfer, Settings, Wifi};
 
   if (hasOpdsServers) {
     menuItems.insert(menuItems.begin() + 2, tr(STR_OPDS_BROWSER));
@@ -360,5 +365,12 @@ void HomeActivity::onRecentsOpen() { activityManager.goToRecentBooks(); }
 void HomeActivity::onSettingsOpen() { activityManager.goToSettings(); }
 
 void HomeActivity::onFileTransferOpen() { activityManager.goToFileTransfer(); }
+
+// Placeholder screen proving a fork can add a new Home entry and new activity
+// content through the existing navigation/rendering pipeline. Replace with a
+// real CompanionActivity once the BLE/Card/Pass work starts.
+void HomeActivity::onCompanionOpen() {
+  activityManager.goToFullScreenMessage("Companion mode is not built yet.");
+}
 
 void HomeActivity::onOpdsBrowserOpen() { activityManager.goToBrowser(); }
