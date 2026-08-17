@@ -70,9 +70,14 @@ class HomeActivity final : public Activity {
   void loadRecentCovers(int coverHeight);
 
  public:
+  // Constructor and destructor are declared here, defined in the .cpp after
+  // RecentBooksStore.h makes RecentBook complete: with RecentBook only
+  // forward-declared, std::vector<RecentBook>'s destructor can't be
+  // instantiated for exception-safety unwinding at construction, nor for the
+  // implicit destructor, if either is defined in this header.
   explicit HomeActivity(GfxRenderer& renderer, MappedInputManager& mappedInput,
-                        HomeMenuItem initialMenuItemValue = HomeMenuItem::NONE)
-      : Activity("Home", renderer, mappedInput), initialMenuItem(initialMenuItemValue) {}
+                        HomeMenuItem initialMenuItemValue = HomeMenuItem::NONE);
+  ~HomeActivity() override;
   void onEnter() override;
   void onExit() override;
   void loop() override;
